@@ -2,6 +2,8 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-regular-svg-icons";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 export const Navbar = () => {
   const menuList = [
@@ -14,10 +16,23 @@ export const Navbar = () => {
     "Sale",
     "지속가능성",
   ];
+  const navi = useNavigate();
+  const goToLogin = () => {
+    navi("/login");
+  };
+
+  const search = (event) => {
+    if (event.key === "Enter") {
+      let keyword = event.target.value;
+      console.log(keyword);
+      navi(`/?q=${keyword}`);
+    }
+  };
+
   return (
     <div>
       <div>
-        <div className="login-button">
+        <div className="login-button" onClick={goToLogin}>
           <FontAwesomeIcon icon={faUser} />
           <div>로그인</div>
         </div>
@@ -37,7 +52,7 @@ export const Navbar = () => {
 
         <div>
           <FontAwesomeIcon icon={faSearch} />
-          <input type="text" />
+          <input type="text" onKeyPress={(event) => search(event)} />
         </div>
       </div>
     </div>
