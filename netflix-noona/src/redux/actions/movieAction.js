@@ -1,23 +1,44 @@
 import api from "../api";
 
+const API_KEY = process.env.REACT_APP_API_KEY;
+
 function getMovies() {
   return async (dispatch) => {
-    const poppularMovieApi = await api.get(
-      `/movie/popular?api_key=<<api_key>>&language=en-US&page=1`
-    );
+    try {
+      dispatch({ type: "GET_MOVIES_REQEUST" });
+      const popularMovieApi = api.get(
+        `/movie/popular?api_key=${API_KEY}&language=en-US&page=1`
+      );
+      const topRateApi = api.get(
+        `/movie/top_rated?api_key=${API_KEY}&language=en-US&page=1`
+      );
+      const upComingApi = api.get(
+        `/movie/upcoming?api_key=${API_KEY}&language=en-US&page=1`
+      );
 
-    // let url = `https://api.themoviedb.org/3/movie/popular?api_key=<<api_key>>&language=en-US&page=1`
-    // let response = await fetch(url)
-    // let data = await response.json()
+      const genreApi = api.get(
+        `/genre/movie/list?api_key=${API_KEY}&language=en-US`
+      );
 
-    // let url2 = `https://api.themoviedb.org/3/movie/top_rated?api_key=<<api_key>>&language=en-US&page=1`
-    // let response2
+      let [popularMovies, topRateMovies, upcomingMovies, genreList] =
+        await Promise.all([popularMovieApi, topRateApi, upComingApi, genreApi]);
 
-    // let url3 = `https://api.themoviedb.org/3/movie/upcoming?api_key=<<api_key>>&language=en-US&page=1`
-    // let res = await fetch(url3)
+      dispatch({
+        type: "GET_MOVIES_SUCCESS",
+        payload: {
+          popularMovies: popularMovies.data,
+          topRateMovies: topRateMovies.data,
+          upcomingMovies: upcomingMovies.data,
+          genreList: genreList.data.genres,
+          loading: false,
+        },
+      });
+    } catch (e) {
+      dispatch({ type: "GET_MOVIES_FAILURE" });
+    }
   };
 }
 
-export default movieAction = {
+export const movieAction = {
   getMovies,
 };
